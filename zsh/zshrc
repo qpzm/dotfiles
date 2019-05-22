@@ -100,3 +100,19 @@ fi
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# pyenv virtualenv
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+export PATH=~/Library/Python/3.4/bin:$PATH
+export LANG=en_US
+export PATH="/usr/local/opt/gettext/bin:$PATH"
+
+# tmux
+# explicitly informs tmux that UTF-8 is supported
+alias tmux='tmux -u'
+
+. $HOME/.asdf/asdf.sh
+
+. $HOME/.asdf/completions/asdf.bash
