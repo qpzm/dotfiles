@@ -30,6 +30,7 @@
 	discard = checkout --
 	update-branch = branch -f --no-track
 	ub = branch -f --no-track
+	push-branch = !sh -c 'git symbolic-ref -q --short HEAD | xargs git push origin -u '
 
 	assume-unchanged = update-index --assume-unchanged
 	unassume-unchanged = update-index --no-assume-unchanged
@@ -39,6 +40,7 @@
 
 	wdiff = diff --color-words
 	wshow = show --color-words
+
 
 [color "decorate"]
 	# With git 1.8+, %C(auto)%d will assign different color to each refspec.
