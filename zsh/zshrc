@@ -106,7 +106,7 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 export PATH=~/Library/Python/3.4/bin:$PATH
-export LANG=en_US
+export LANG=en_US.UTF-8
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 
 # tmux
