@@ -180,6 +180,14 @@ if (( $+commands[pydf] )); then
     alias df="pydf"
 fi
 
+function site-packages() {
+    # print the path to the site packages from current python environment,
+    # e.g. ~/.anaconda3/envs/XXX/lib/python3.6/site-packages/
+
+    python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+    # python -c "import site; print('\n'.join(site.getsitepackages()))"
+}
+
 # open some macOS applications
 if [[ "$(uname)" == "Darwin" ]]; then
 
