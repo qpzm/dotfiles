@@ -76,6 +76,7 @@ tasks = {
     '~/.config/terminator' : 'config/terminator',
     '~/.config/pudb/pudb.cfg' : 'config/pudb/pudb.cfg',
     '~/.config/fsh/wook.ini' : 'config/fsh/wook.ini',
+    '~/.config/direnv/direnvrc' : 'config/direnv/direnvrc',
 
     # pip and python
     #'~/.pip/pip.conf' : 'pip/pip.conf',
