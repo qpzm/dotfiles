@@ -44,6 +44,9 @@
 	# side-by-side diff, requires cdiff
 	sdiff = "! git diff $@ | cdiff -s -w0 "
 
+	# open files casuing merge confilcts
+	conflicts = !sh -c 'git diff --name-only | uniq | xargs nvim'
+
 [color "decorate"]
 	# With git 1.8+, %C(auto)%d will assign different color to each refspec.
 	HEAD = cyan
