@@ -34,6 +34,7 @@ if command -v nvim 2>&1 >/dev/null; then
     alias vim='nvim'
 fi
 alias vi='vim'
+alias v='vim'
 
 # Just open ~/.vimrc, ~/.zshrc, etc.
 alias vimrc='vim +cd\ ~/.vim -O ~/.vim/vimrc ~/.vim/plugins.vim'
@@ -131,6 +132,7 @@ alias ipypdb='ipy -c "%pdb" -i'   # with auto pdb calling turned ON
 
 alias ipynb='jupyter notebook'
 alias ipynb0='ipynb --ip=0.0.0.0'
+alias jupyter-lab='jupyter-lab --no-browser'
 
 # ptpython
 alias ptpy='ptipython'
@@ -186,6 +188,18 @@ function site-packages() {
 
     python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
     # python -c "import site; print('\n'.join(site.getsitepackages()))"
+}
+
+function vimpy() {
+    # Open a corresponding file of specified python module.
+    # e.g. $ vimpy numpy.core    --> opens $(site-package)/numpy/core/__init__.py
+    if [[ -z "$1" ]]; then; echo "Argument required"; return 1; fi
+
+    module_path=$(python -c "import $1; print($1.__file__)")
+    if [[ -n "$module_path" ]]; then
+      echo $module_path
+      vim "$module_path"
+    fi
 }
 
 # open some macOS applications

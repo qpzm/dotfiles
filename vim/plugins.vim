@@ -1,18 +1,9 @@
+runtime autoload/plug_addon.vim
+
 let s:darwin = has('mac')
 
 " Plug buffers appear in a new tab
 let g:plug_window = '-tabnew'
-
-
-" UnPlug: deregister plugin, must be called before plug#end()
-" https://github.com/junegunn/vim-plug/issues/469
-function! s:deregister(repo)
-  let repo = substitute(a:repo, '[\/]\+$', '', '')
-  let name = fnamemodify(repo, ':t:s?\.git$??')
-  call remove(g:plugs, name)
-  call remove(g:plugs_order, index(g:plugs_order, name))
-endfunction
-command! -nargs=1 -bar UnPlug call s:deregister(<args>)
 
 " for neovim plugins (rplugin)
 if has('nvim')
@@ -21,8 +12,9 @@ if has('nvim')
     endfunction
 endif
 
-
+"==============================================
 call plug#begin('~/.vim/plugged')
+"==============================================
 
 " General and Behaviour
 Plug 'flazz/vim-colorschemes'
@@ -52,7 +44,8 @@ Plug 'tpope/vim-tbone'
 Plug 'szw/vim-maximizer'    " zoom and unzoom!
 Plug 'junegunn/goyo.vim'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'wookayin/vim-tmux-focus-events'   "A patched version of mine
+Plug 'tmux-plugins/vim-tmux-focus-events'
+      \ | ForcePlugURI 'vim-tmux-focus-events'
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
 Plug 'airblade/vim-gitgutter'
@@ -107,7 +100,7 @@ Plug 'tmux-plugins/vim-tmux'
 Plug 'klen/python-mode', { 'branch': 'develop' } |
   \ Plug 'wookayin/vim-python-enhanced-syntax'
 Plug 'davidhalter/jedi-vim'
-if has('nvim')
+if has('nvim') && g:python3_host_version >= '3.5'
     Plug 'numirias/semshi', { 'do': function('DoRemote') }
     Plug 'stsewd/isort.nvim', { 'do': function('DoRemote') }
 endif
@@ -118,6 +111,7 @@ Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
 "Plug 'LaTeX-Box-Team/LaTeX-Box'
 Plug 'lervag/vimtex', { 'for' : ['tex', 'plaintex'] }
+Plug 'machakann/vim-Verdin', { 'for': ['vim'] }   " vimscript omnifunc
 Plug 'gisraptor/vim-lilypond-integrator'
 Plug 'tfnico/vim-gradle'
 Plug 'Tyilo/applescript.vim'
@@ -132,11 +126,11 @@ Plug 'xolox/vim-lua-ftplugin', { 'for' : ['lua'] }
 
 
 " Completion engine for neovim (deoplete or language server)
-if has('nvim')
+" Requires python 3.6.1+
+if has('nvim') && g:python3_host_version >= '3.6.1'
     Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
     Plug 'zchee/deoplete-jedi'    " Python
     Plug 'zchee/deoplete-clang'   " C/C++
-    Plug 'machakann/vim-Verdin', { 'for': ['vim'] }   " vimscript
     Plug 'zchee/deoplete-zsh', { 'for': ['zsh'] }     " zsh
 
 elseif v:version >= 800
@@ -155,24 +149,36 @@ endif
 " *EXPERIMENTAL* language-server support (coc.nvim)
 " Activated if the following conditions are met:
 "    (i) Proper neovim version and python3
-"    (ii) 'node' and 'yarn' are installed
+"    (ii) 'node' and 'npm' are installed
 "    (iii) Directory ~/.config/coc exists
 function! s:configure_coc_nvim()
-    if has('nvim') && executable('yarn') && executable('python3') &&
+    if has('nvim') && executable('npm') && executable('python3') &&
             \ isdirectory(expand("\~/.config/coc/"))
     else | return | endif   " do nothing if conditions are not met
 
     if ! has('nvim-0.3.1')
-        autocmd VimEnter * echohl WarningMsg | echon
+        autocmd VimEnter * echohl WarningMsg | echom
                     \ 'WARNING: Neovim 0.3.1+ is required for coc.nvim. '
-                    \ . '(Try: dotfiles install neovim)'
+                    \ . '(Try: dotfiles install neovim)' | echohl None
         return
     endif
 
-    " supercedes deoplete :)
+    let node_version = system('node --version')
+    if plug_addon#version_lessthan(node_version, 'v8.10')
+        autocmd VimEnter * echohl WarningMsg | echom
+                    \ 'WARNING: Node v8.10.0+ is required for coc.nvim. '
+                    \ . '(Try: dotfiles install node)' | echohl None
+        return
+    endif
+
+    "Plug 'neoclide/coc.nvim', {'do': function('coc#util#install') }   " from source
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}                    " released binary
+    Plug 'neoclide/jsonc.vim'
+
+    " coc supercedes deoplete and supertab
     UnPlug 'Shougo/deoplete.nvim'
     UnPlug 'davidhalter/jedi-vim'
-    Plug 'neoclide/coc.nvim', {'do': function('coc#util#install') }
+    UnPlug 'ervandew/supertab'         " Custom <TAB> mapping supercedes supertab
 
     let s:floating_available = exists('*nvim_open_win') &&
                 \ (exists('##MenuPopupChanged') || exists('##CompleteChanged'))
@@ -184,19 +190,9 @@ function! s:configure_coc_nvim()
     " automatically install CocExtensions by default
     let g:coc_global_extensions = [
                 \ 'coc-json', 'coc-highlight', 'coc-snippets',
-                \ 'coc-python'
+                \ 'coc-python', 'coc-vimlsp'
                 \ ]
 
-    " Additional dependencies for the coc extensions
-    if index(g:coc_global_extensions, 'coc-pyls')
-        " [coc-pyls] install pyls into the 'current' python
-        let pyls_output = system("python3 -c 'import pyls' 2> /dev/null")
-        if v:shell_error
-            let s:pip_options = Python3_determine_pip_options()
-            execute 'autocmd VimEnter *.py !python3 -m pip install '
-                        \ . s:pip_options . ' "python-language-server"'
-        endif
-    endif
 endfunction
 call s:configure_coc_nvim()
 
@@ -207,4 +203,6 @@ if filereadable(expand("\~/.vim/plugins.local.vim"))
 endif
 
 call plug#end()
+
 delcom UnPlug
+delcom ForcePlugURI
