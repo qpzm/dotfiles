@@ -121,3 +121,6 @@ alias tmux='tmux -u'
 
 # direnv
 eval "$(direnv hook zsh)"
+
+# flutter
+export PATH="/Users/hm/Development/flutter/bin:$PATH"
