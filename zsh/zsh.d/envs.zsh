@@ -1,6 +1,6 @@
 # Environment Variables and Shell Options for ZSH
 # (overrides prezto's default settings or zshenv)
-
+export LANG=en_US.UTF-8
 
 # fzf {{{
 #https://github.com/junegunn/fzf/wiki/Configuring-shell-key-bindings
@@ -61,10 +61,7 @@ unsetopt NOMATCH
 # Entries listed here may not be visible from zsh plugins and source scripts.
 
 # GO {{{
-export GOROOT=$HOME/.go
-export GOPATH=$GOROOT/packages
-path=( $path $GOROOT/bin $GOPATH/bin )
-# }}}
+# `brew install go` handles this.
 
 # Bazel {{{
 if [ -f $HOME/.bazel/bin/bazel ]; then
