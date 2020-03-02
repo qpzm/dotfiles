@@ -119,4 +119,11 @@ alias tmux='tmux -u'
 eval "$(direnv hook zsh)"
 
 # flutter
-export PATH="/Users/hm/Development/flutter/bin:$PATH"
+if [ -d $HOME/Development/flutter/bin/ ]; then
+  path=( $path $HOME/Development/flutter/bin )
+fi
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
