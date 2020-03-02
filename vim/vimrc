@@ -560,11 +560,12 @@ function! s:auto_termguicolors()
     set notermguicolors
   endif
 endfunction
-"call s:auto_termguicolors()
+call s:auto_termguicolors()
 
 
 " apply base theme
-silent! colorscheme xoria256
+silent! colorscheme ayu
+let ayucolor="dark"
 
 " airline theme: status line and tab line
 if has('termguicolors') && &termguicolors
