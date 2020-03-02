@@ -939,7 +939,7 @@ command! -bang -nargs=? GFiles     call fzf#vim#gitfiles(<q-args>, <q-args> != '
 
 " :F is a shortcut for :GFiles or :FZF
 function! s:fzf_smart()
-  let l:git_dir = fugitive#extract_git_dir(expand('%:p'))
+  let l:git_dir = FugitiveExtractGitDir(expand('%:p'))
   " in a git repo, invoke :GFiles (plus untracked files)
   if ! empty(l:git_dir) | GFiles -c -o --exclude-standard
   " not in git repo, invoke :FZF by fallback
