@@ -14,7 +14,7 @@
 	quotepath = false
 
 	# editor
-	editor = vim
+	editor = nvim
 
 [pager]
 	# Make sure the pager terminates when it hits on the end of log
