@@ -104,6 +104,7 @@ if has('nvim') && g:python3_host_version >= '3.5'
     Plug 'stsewd/isort.nvim', { 'do': function('DoRemote') }
 endif
 
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 Plug 'artur-shaik/vim-javacomplete2'
 
 Plug 'vim-pandoc/vim-pandoc'
