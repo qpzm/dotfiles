@@ -107,6 +107,9 @@ fi
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
+# rbenv
+eval "$(rbenv init -)"
+
 # tmux
 # explicitly informs tmux that UTF-8 is supported
 alias tmux='tmux -u'
