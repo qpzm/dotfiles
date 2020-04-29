@@ -34,3 +34,6 @@ __pycache__
 
 # Etc
 npm-debug.log
+
+# C++
+a.out
