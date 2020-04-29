@@ -80,3 +80,22 @@ snippet freopen
 	freopen("${1:input.txt}", "rt", stdin);
 	freopen("${2:output.txt}", "wt", stdout);
 
+snippet ALGO
+	#include <vector>
+	#include <iostream>
+	#include <algorithm>
+
+	using namespace std;
+
+	int main() {
+		${1}
+		return 0;
+	}
+
+snippet MATRIX_PRINT
+	for(int i = 0; i < ${1}.size(); ++i) {
+		for(int j = 0; j < $1[i].size(); ++j) {
+			cout << $1[i][j] << ' ';
+		}
+		cout << '\n';
+	}
