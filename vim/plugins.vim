@@ -141,11 +141,6 @@ elseif v:version >= 800
 
 endif
 
-" Asynchronous Lint Engine (ALE)
-if has('nvim') || v:version >= 800
-    Plug 'w0rp/ale'
-endif
-
 " *EXPERIMENTAL* language-server support (coc.nvim)
 " Activated if the following conditions are met:
 "    (i) Proper neovim version and python3
