@@ -59,6 +59,20 @@
             "initializationOptions": {
                 "cache": {
                     "directory": "/tmp/ccls"
+                },
+                 // see https://github.com/MaskRay/ccls/issues/191
+                "clang": {
+                    // from $ clang -v -fsyntax-only -x c++ /dev/null
+                    "extraArgs": [
+                        "-isystem/usr/local/include",
+                        "-isystem/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1",
+                        "-isystem/Library/Developer/CommandLineTools/usr/lib/clang/11.0.3/include",
+                        "-isystem/Library/Developer/CommandLineTools/usr/include",
+                        "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include",
+                        "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+                    ],
+                    //From $clang -print-resource-dir
+                    "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.3"
                 }
             }
         }
