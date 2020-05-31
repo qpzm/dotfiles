@@ -128,6 +128,9 @@ if [ -d $HOME/Development/flutter/bin/ ]; then
   path=( $path $HOME/Development/flutter/bin )
 fi
 
+# Go
+path=( $path:/usr/local/go/bin )
+
 # docker
 alias dc='docker-compose'
 
