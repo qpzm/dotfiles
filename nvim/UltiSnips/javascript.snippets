@@ -1,0 +1,62 @@
+# JS snippets
+snippet fun "function" b
+function ${1}(${2}) {
+  ${3}
+}
+
+endsnippet
+
+snippet component
+import React, { Component } from 'react';
+
+export default class ${1} extends Component {
+  render() {
+    return (
+      <div>
+      </div>
+    )
+  }
+}
+endsnippet
+
+snippet ALGO
+function solution() {
+}
+
+function splitAndParse(line) {
+  return line.trim().split(/\s+/).map(e => parseInt(e))
+}
+
+function create2dArray(row, col, init) {
+  let memo = Array(row)
+  for (var i = 0; i < row; i++) {
+    memo[i] = Array(col).fill(init)
+  }
+  return memo
+}
+
+if (require.main === module) {
+  const lines = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n')
+  var i = 1
+  while(i < lines.length) {
+	var [N, S] = splitAndParse(lines[i++])
+	console.log(solution())
+  }
+}
+
+module.exports = {
+	solution: solution
+}
+endsnippet
+
+snippet JEST
+import { solution } from './${1}'
+
+describe('', () => {
+  test('', () => {
+    const input;
+    const answer;
+    expect(solution(input)).toStrictEqual(answer);
+  })
+})
+endsnippet
