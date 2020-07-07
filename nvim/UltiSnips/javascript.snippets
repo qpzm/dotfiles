@@ -6,17 +6,26 @@ function ${1}(${2}) {
 
 endsnippet
 
-snippet component
+snippet stateful_component
 import React, { Component } from 'react';
 
 export default class ${1} extends Component {
   render() {
     return (
       <div>
+		${2}
       </div>
     )
   }
 }
+endsnippet
+
+snippet stateless_component
+import React from 'react';
+
+const ${1} = () => null;
+
+export default ${1};
 endsnippet
 
 snippet ALGO
