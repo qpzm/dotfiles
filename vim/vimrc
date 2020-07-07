@@ -242,6 +242,26 @@ noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
+" jump to window through <Leader><number>
+" The index starts from the top left.
+" Example
+" 1 2
+" 3
+" 4 5 6
+let i = 1
+while i <= 9
+    execute 'nnoremap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
+    let i = i + 1
+endwhile
+
+function! WindowNumber()
+    let str=tabpagewinnr(tabpagenr())
+    return str
+endfunction
+
+set laststatus=2
+set statusline=win:%{WindowNumber()}
+
 " zoom and unzoom (like tmux) -- by 'vim-maximizer'
 nnoremap <C-w>z :MaximizerToggle<CR>
 let g:maximizer_set_default_mapping = 0         " do not map <F3>
