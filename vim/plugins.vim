@@ -185,9 +185,18 @@ function! s:configure_coc_nvim()
     " automatically install CocExtensions by default
     let g:coc_global_extensions = [
                 \ 'coc-json', 'coc-highlight', 'coc-snippets',
-                \ 'coc-python', 'coc-vimlsp'
+                \ 'coc-python', 'coc-vimlsp', 'coc-tsserver'
                 \ ]
+    nmap <leader>rn <Plug>(coc-rename)
+    nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gy <Plug>(coc-type-definition)
+    nmap <silent> gr <Plug>(coc-references)
 
+    nmap <silent> [g <Plug>(coc-diagnostic-prev)
+    nmap <silent> ]g <Plug>(coc-diagnostic-next)
+    nnoremap <silent> <space>d :<C-u>CocList diagnostics<cr>
+    nnoremap <silent> <space>s :<C-u>CocList -I symbols<cr>
+    nmap <leader>do <Plug>(coc-codeaction)
 endfunction
 call s:configure_coc_nvim()
 
