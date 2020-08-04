@@ -37,6 +37,16 @@
      ************/
     "coc.source.omni.filetypes": ["vim"],
 
+    /************
+     * coc-eslint
+     ************/
+    "eslint.autoFixOnSave": true,
+
+    /************
+     * coc-prettier
+     ************/
+    "coc.preferences.formatOnSaveFiletypes": ["ts", "json", "js"],
+
     /**************************
      * custom language servers
      **************************/
