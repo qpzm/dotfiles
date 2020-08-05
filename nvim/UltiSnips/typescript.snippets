@@ -1,3 +1,37 @@
 snippet cl
-console.log({ ${1:obj} })
+console.log({ ${1:obj} });
+endsnippet
+
+snippet import "Description" b
+import { ${1:mod} } from '${2:file}';
+endsnippet
+
+snippet afterEach "jest afterEach block " b
+afterEach(async () => {
+  ${1:content}
+});
+endsnippet
+
+snippet beforeEach "jest beforeEach block " b
+beforeEach(async () => {
+  ${1:content}
+});
+endsnippet
+
+snippet afterAll "jest afterAll block " b
+afterAll(async () => {
+  ${1:content}
+});
+endsnippet
+
+snippet beforeAll "jest beforeAll block " b
+beforeAll(async () => {
+  ${1:content}
+});
+endsnippet
+
+snippet it "jest it block" b
+it('', async () => {
+  ${1:content}
+});
 endsnippet
