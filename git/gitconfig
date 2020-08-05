@@ -51,6 +51,7 @@
 	# open files casuing merge confilcts
 	conflicts = !sh -c 'git diff --name-only | uniq | xargs nvim'
 
+    root = rev-parse --show-toplevel
 [color]
 	status = auto
 	diff = auto
