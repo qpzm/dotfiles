@@ -143,3 +143,5 @@ export NVM_DIR="$HOME/.nvm"
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
+
+[ -s "/Users/hyunminlee/.jabba/jabba.sh" ] && source "/Users/hyunminlee/.jabba/jabba.sh"
