@@ -144,4 +144,6 @@ export NVM_DIR="$HOME/.nvm"
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
 
-[ -s "/Users/hyunminlee/.jabba/jabba.sh" ] && source "/Users/hyunminlee/.jabba/jabba.sh"
+# java
+[ -s "$HOME/.jabba/jabba.sh" ] && source "$HOME/.jabba/jabba.sh"
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/HOME
