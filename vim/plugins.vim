@@ -105,7 +105,6 @@ if has('nvim') && g:python3_host_version >= '3.5'
 endif
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
-Plug 'artur-shaik/vim-javacomplete2'
 
 Plug 'vim-pandoc/vim-pandoc'
 Plug 'vim-pandoc/vim-pandoc-syntax'
