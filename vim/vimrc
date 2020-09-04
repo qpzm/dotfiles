@@ -55,7 +55,7 @@ catch
 endtry
 
 " basic displays
-set relativenumber                 " show relative line numbers
+set number                         " show absolute line numbers
 set ruler
 
 " input settings
