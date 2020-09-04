@@ -1,0 +1,27 @@
+let mapleader=","
+
+""" Plugins  --------------------------------
+set surround
+set easymotion
+
+""" Mappings  -------------------------------
+imap jk <Esc>
+nmap g] :action GotoImplementation<CR>
+nmap g] :action GotoDeclaration<CR>
+map <leader>z :action ToggleDistractionFreeMode<CR>
+
+" window navigation
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+
+" Run
+map <leader>dd :action Debug<CR>
+map <leader>cd :action ChooseDebugConfiguration<CR>
+map <leader>rr :action Run<CR>
+map <leader>cr :action ChooseRunConfiguration<CR>
+
+""" Tips  -----------------------------------
+" gt and gT :jump back and forth
+"
