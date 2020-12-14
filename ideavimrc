@@ -6,9 +6,11 @@ set easymotion
 
 """ Mappings  -------------------------------
 imap jk <Esc>
-nmap g] :action GotoImplementation<CR>
-nmap g] :action GotoDeclaration<CR>
+nmap gr :action GotoImplementation<CR>
+nmap gr :action GotoDeclaration<CR>
 map <leader>z :action ToggleDistractionFreeMode<CR>
+nmap <leader>t :action GotoTest<CR>
+nmap <leader>an :action Annotate<CR>
 
 " window navigation
 noremap <C-h> <C-w>h
@@ -22,6 +24,17 @@ map <leader>cd :action ChooseDebugConfiguration<CR>
 map <leader>rr :action Run<CR>
 map <leader>cr :action ChooseRunConfiguration<CR>
 
+nmap <leader>T :action ActivateTerminalToolWindow<CR>
+nmap <leader>D :action ActivateDebugToolWindow<CR>
+
+map <leader>rf :action RefactoringMenu<CR>
+nmap ,rc :action RunClass<cr>
+
 """ Tips  -----------------------------------
 " gt and gT :jump back and forth
 "
+
+set smartindent
+set tabstop=4
+set expandtab
+set shiftwidth=4
