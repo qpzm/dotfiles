@@ -28,7 +28,11 @@ nmap <leader>T :action ActivateTerminalToolWindow<CR>
 nmap <leader>D :action ActivateDebugToolWindow<CR>
 
 map <leader>rf :action RefactoringMenu<CR>
-nmap ,rc :action RunClass<cr>
+nmap <leader>rc :action RunClass<CR>
+map <leader>cc :action CommentByLineComment<CR>
+
+""" Git  ------------------------------------
+map <leader>ga :action Git.Add<CR>
 
 """ Tips  -----------------------------------
 " gt and gT :jump back and forth
