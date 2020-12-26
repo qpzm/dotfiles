@@ -131,16 +131,14 @@ if has('nvim') && g:python3_host_version >= '3.6.1'
     Plug 'zchee/deoplete-jedi'    " Python
     Plug 'zchee/deoplete-clang'   " C/C++
     Plug 'zchee/deoplete-zsh', { 'for': ['zsh'] }     " zsh
-
-elseif v:version >= 800
-
-    " Vim 8.0: Alternative async-completor plugin
-    " built-in support for python (jedi), java, etc.
-    Plug 'maralla/completor.vim'
-
 endif
 
-" *EXPERIMENTAL* language-server support (coc.nvim)
+" Asynchronous Lint Engine (ALE)
+if has('nvim') || v:version >= 800
+  Plug 'w0rp/ale'
+endif
+
+" [coc.nvim] Language-server support (neovim and vim8)
 " Activated if the following conditions are met:
 "    (i) Proper neovim version and python3
 "    (ii) 'node' and 'npm' are installed
@@ -186,16 +184,6 @@ function! s:configure_coc_nvim()
                 \ 'coc-json', 'coc-highlight', 'coc-snippets',
                 \ 'coc-python', 'coc-vimlsp', 'coc-tsserver'
                 \ ]
-    nmap <leader>rn <Plug>(coc-rename)
-    nmap <silent> gd <Plug>(coc-definition)
-    nmap <silent> gy <Plug>(coc-type-definition)
-    nmap <silent> gr <Plug>(coc-references)
-
-    nmap <silent> [g <Plug>(coc-diagnostic-prev)
-    nmap <silent> ]g <Plug>(coc-diagnostic-next)
-    nnoremap <silent> <space>d :<C-u>CocList diagnostics<cr>
-    nnoremap <silent> <space>s :<C-u>CocList -I symbols<cr>
-    nmap <leader>do <Plug>(coc-codeaction)
 endfunction
 call s:configure_coc_nvim()
 

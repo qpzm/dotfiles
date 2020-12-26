@@ -22,16 +22,6 @@
         "<C-c>": "do:exit",   // CTRL-C: close window
     },
 
-    /*************
-     * coc-python
-     *************/
-
-    // Use Microsoft Python Language Server (LSP) instead of jedi
-    "python.jediEnabled": false,
-
-    // Formtting provider (yapf, black, autopep8)
-    "python.formatting.provider": "yapf",
-
     /************
      * coc-omni
      ************/
