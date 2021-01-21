@@ -54,6 +54,9 @@
 	conflicts = !sh -c 'git diff --name-only | uniq | xargs nvim'
 
     root = rev-parse --show-toplevel
+
+	list-branch = for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
+
 [color]
 	status = auto
 	diff = auto
