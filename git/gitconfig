@@ -17,6 +17,8 @@
 	editor = nvim
 	ignorecase = false
 
+	commentchar = "@"
+
 [pager]
 	# Make sure the pager terminates when it hits on the end of log
 	log = less -FE
