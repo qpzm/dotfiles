@@ -36,9 +36,8 @@
 	discard = checkout --
 	update-branch = branch -f --no-track
 	ub = branch -f --no-track
-	push-branch = !sh -c 'git symbolic-ref -q --short HEAD | xargs git push origin -u '
 	pb = push-branch
-	prune-branch = !sh -c 'git branch | grep -v "develop" | xargs git branch -D'
+	prune-branch = !sh -c 'git branch | xargs git branch -D'
 
 	assume-unchanged = update-index --assume-unchanged
 	unassume-unchanged = update-index --no-assume-unchanged
@@ -130,6 +129,8 @@
 [push]
 	# Adopt the new default in Git 2.x
 	default = simple
+	# No more git push -u origin branch
+	autoSetupRemote = true
 
 [branch]
 	# Make all new branches to automatically use rebase rather than merge, on pull
