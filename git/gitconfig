@@ -37,7 +37,7 @@
 	update-branch = branch -f --no-track
 	ub = branch -f --no-track
 	pb = push-branch
-	prune-branch = !sh -c 'git branch | xargs git branch -D'
+	prune-branch = "!f() { git branch | grep $1 | xargs git branch -D; }; f"
 
 	assume-unchanged = update-index --assume-unchanged
 	unassume-unchanged = update-index --no-assume-unchanged
