@@ -38,7 +38,31 @@ map <leader>ga :action Git.Add<CR>
 " gt and gT :jump back and forth
 "
 
-set smartindent
-set tabstop=4
-set expandtab
-set shiftwidth=4
+"set smartindent
+"set tabstop=4
+"set expandtab
+"set shiftwidth=4
+
+" copy to clipboard
+" set clipboard+=unnamed
+
+" hard wrap at 120 chars
+set textwidth=120
+set colorcolumn=120
+highlight ColorColumn guibg=Black
+highlight ColorColumn ctermbg=0
+
+" Go to tab by number
+noremap <leader>1 1gt
+noremap <leader>2 2gt
+noremap <leader>3 3gt
+noremap <leader>4 4gt
+noremap <leader>5 5gt
+noremap <leader>6 6gt
+noremap <leader>7 7gt
+noremap <leader>8 8gt
+noremap <leader>9 9gt
+noremap <leader>0 :tablast<cr>
+
+" Run the current line in shell script
+nmap <F4> Y:!<C-R>"<C-H><CR>
