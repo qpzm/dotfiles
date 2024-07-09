@@ -45,7 +45,6 @@ alias mv='mv -iv'
 # screens
 alias scr='screen -rD'
 
-
 ##################
 # 3. Color & PS1 #
 ##################
@@ -106,3 +105,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 [ -s "/Users/hyunminlee/.jabba/jabba.sh" ] && source "/Users/hyunminlee/.jabba/jabba.sh"
+. "$HOME/.cargo/env"
+. "/Users/hyunminlee/.starkli/env"

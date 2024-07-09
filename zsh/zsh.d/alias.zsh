@@ -254,3 +254,10 @@ if (( ! $+commands[tb] )); then
 fi
 
 # }}}
+
+# ip
+alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias localip="ipconfig getifaddr en0"
+
+# foundry
+alias ft='forge test'
