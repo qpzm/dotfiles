@@ -139,3 +139,77 @@ export PYTHONSTARTUP=$HOME/.pythonrc.py
 
 # Disable dot files in archive
 export COPYFILE_DISABLE=true
+. "$HOME/.cargo/env"
+. "/Users/hyunminlee/.starkli/env"
+
+export PATH="$PATH:/Users/hyunminlee/.local/bin"
+
+# java
+[ -s "$HOME/.jabba/jabba.sh" ] && source "$HOME/.jabba/jabba.sh"
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/HOME
+
+# rust
+source $HOME/.cargo/env
+
+export PATH="$PATH:$HOME/.foundry/bin"
+
+[ -f "/Users/hyunminlee/.ghcup/env" ] && source "/Users/hyunminlee/.ghcup/env" # ghcup-env
+# pnpm
+export PNPM_HOME="/Users/hyunminlee/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
+
+# intellij
+# export PATH="$PATH:/Applications/IntelliJ IDEA.app/Contents/MacOS"
+# rustrover
+export PATH="$PATH:/Users/hyunminlee/Library/Application Support/JetBrains/Toolbox/scripts"
+
+# Reinitialize git submodules when switching between branches
+function reinit() {
+    git submodule deinit --force .
+    git submodule update --init --recursive
+}
+
+# starkli
+. "/Users/hyunminlee/.starkli/env"
+
+# Use Starknet testnet
+export STARKNET_NETWORK=alpha-goerli
+# Set the default wallet implementation to be used by the CLI export
+STARKNET_WALLET=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount
+# Set the path to the Cairo 1 compiler binary. Adapt this path to fit your installation if needed
+export CAIRO_COMPILER_DIR=~/.cairo/target/release/
+
+export STARKNET_ACCOUNT=~/.starkli-wallets/deployer/account.json
+export STARKNET_KEYSTORE=~/.starkli-wallets/deployer/keystore.json
+export PATH="$HOME/.cairo/target/release:$PATH"
+
+# bun completions
+[ -s "/Users/hyunminlee/.bun/_bun" ] && source "/Users/hyunminlee/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# postgresql
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+export NARGO_HOME="/Users/hyunminlee/.nargo"
+
+export PATH="$PATH:$NARGO_HOME/bin"
+
+export BB_HOME="/Users/hyunminlee/.bb"
+
+export PATH="$PATH:$BB_HOME"
+
+export OPENSSL_DIR=$(brew --prefix openssl)
+export OPENSSL_INCLUDE_DIR=$(brew --prefix openssl)/include
+export OPENSSL_LIB_DIR=$(brew --prefix openssl)/lib
+
+# intellij
+export PATH="/Users/hyunminlee/Library/Application Support/JetBrains/Toolbox/scripts/:$PATH"
+
+# [[ -s "/Users/hyunminlee/.gvm/scripts/gvm" ]] && source "/Users/hyunminlee/.gvm/scripts/gvm"
+export PATH="${HOME}/.bb:${PATH}"

@@ -29,14 +29,13 @@
 [alias]
 	history = log --graph --decorate \
 		--pretty=format:'%C(yellow)%h%Creset  %C(auto)%d%Creset %s  %Cgreen(%ar) %C(bold blue)<%an>%Creset' \
-		--abbrev-commit --date=short --date-order -n30
+		--abbrev-commit --date=short --date-order
 
 	co = checkout
 	unstage = reset HEAD --
 	discard = checkout --
 	update-branch = branch -f --no-track
 	ub = branch -f --no-track
-	pb = push-branch
 	prune-branch = "!f() { git branch | grep $1 | xargs git branch -D; }; f"
 
 	assume-unchanged = update-index --assume-unchanged
@@ -104,6 +103,8 @@
 
 	# smarter diff on splits around blank lines (Git 2.9.0+)
 	compactionHeuristic = true
+
+	ignoreSubmodules = dirty
 
 [diff-so-fancy]
 	markEmptyLines = false

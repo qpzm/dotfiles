@@ -114,17 +114,15 @@ eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 
 # rbenv
+export PATH={$Home}/.rbenv/bin:$PATH && \
 eval "$(rbenv init -)"
 
 # tmux
 # explicitly informs tmux that UTF-8 is supported
 alias tmux='tmux -u'
 
-# erlang & elixir
-if [ -d $HOME/.asdf ]; then
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
-fi
+# asdf
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # direnv
 eval "$(direnv hook zsh)"
@@ -138,7 +136,7 @@ fi
 path=( $path:/usr/local/go/bin )
 
 # docker
-alias dc='docker-compose'
+alias dc='docker compose'
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
@@ -149,7 +147,3 @@ export NVM_DIR="$HOME/.nvm"
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
-
-# java
-[ -s "$HOME/.jabba/jabba.sh" ] && source "$HOME/.jabba/jabba.sh"
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/HOME

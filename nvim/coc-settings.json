@@ -35,11 +35,11 @@
     /************
      * coc-prettier
      ************/
-    "coc.preferences.formatOnSaveFiletypes": ["ts", "json", "js"],
+    "coc.preferences.formatOnSaveFiletypes": ["ts", "json", "js", "rust"],
 
     /**************************
-     * custom language servers
-     **************************/
+    * custom language servers
+    **************************/
     "languageserver": {
         "ccls": {
             "command": "ccls",
@@ -75,10 +75,6 @@
                     "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.3"
                 }
             }
-        },
-        "kotlin": {
-            "command": "~/Development/utils/kotlin-language-server/server/build/install/server/bin/kotlin-language-server",
-            "filetypes": ["kotlin"]
         }
     }
 }

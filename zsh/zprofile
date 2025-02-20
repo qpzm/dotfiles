@@ -7,9 +7,14 @@ umask 022
 path=(
   $path
   /usr/local/{bin,sbin}
+  "\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 )
 
 # Let ~/.local/bin take precedence
 if ! (( ${path[(I)$HOME/.local/bin]} )); then
   path=( $HOME/.local/bin $path )
 fi
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+export PATH="/Users/hyunminlee/.local/share/solana/install/active_release/bin:$PATH"

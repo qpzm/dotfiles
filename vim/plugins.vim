@@ -123,7 +123,6 @@ endif
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-lua-ftplugin', { 'for' : ['lua'] }
 
-
 " Completion engine for neovim (deoplete or language server)
 " Requires python 3.6.1+
 if has('nvim') && g:python3_host_version >= '3.6.1'
