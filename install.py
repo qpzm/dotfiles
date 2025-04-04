@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 '''
@@ -14,18 +14,20 @@
 print(__doc__)  # print logo.
 
 
+import os
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--force', action="store_true", default=False,
                     help='If set, it will override existing symbolic links')
 parser.add_argument('--skip-vimplug', action='store_true',
                     help='If set, do not update vim plugins.')
-parser.add_argument('--skip-zgen', '--skip-zplug', action='store_true',
-                    help='If set, skip zgen updates.')
+parser.add_argument('--skip-zplug', action='store_true',
+                    help='If set, skip update of zsh plugins.')
 
 args = parser.parse_args()
 
 ################# BEGIN OF FIXME #################
+IS_SSH = os.getenv('SSH_TTY', None) is not None
 
 # Task Definition
 # (path of target symlink) : (location of source file in the repository)
@@ -47,7 +49,6 @@ tasks = {
     '~/.gitignore' : 'git/gitignore',
 
     # ZSH
-    '~/.zgen'     : 'zsh/zgen',
     '~/.zsh'      : 'zsh',
     '~/.zlogin'   : 'zsh/zlogin',
     '~/.zlogout'  : 'zsh/zlogout',
@@ -59,14 +60,18 @@ tasks = {
     # Bins
     '~/.local/bin/dotfiles' : 'bin/dotfiles',
     '~/.local/bin/fasd' : 'zsh/fasd/fasd',
-    '~/.local/bin/is_mosh' : 'zsh/is_mosh/is_mosh',
-    '~/.local/bin/fzf' : '~/.fzf/bin/fzf', # fzf is at $HOME/.fzf
+    '~/.local/bin/fzf' : dict(src='~/.fzf/bin/fzf', force=True),
 
     # X
     '~/.Xmodmap' : 'Xmodmap',
 
     # GTK
     '~/.gtkrc-2.0' : 'gtkrc-2.0',
+
+    # terminal emulators (kitty, alacritty, wezterm)
+    '~/.config/kitty': dict(src='config/kitty', cond=not IS_SSH),
+    '~/.config/alacritty': dict(src='config/alacritty', cond=not IS_SSH),
+    '~/.config/wezterm': dict(src='config/wezterm', cond=not IS_SSH),
 
     # tmux
     '~/.tmux'      : 'tmux',
@@ -75,8 +80,6 @@ tasks = {
     # .config (XDG-style)
     '~/.config/terminator' : 'config/terminator',
     '~/.config/pudb/pudb.cfg' : 'config/pudb/pudb.cfg',
-    '~/.config/fsh/wook.ini' : 'config/fsh/wook.ini',
-    '~/.config/direnv/direnvrc' : 'config/direnv/direnvrc',
 
     # pip and python
     #'~/.pip/pip.conf' : 'pip/pip.conf',
@@ -84,17 +87,21 @@ tasks = {
     '~/.pylintrc' : 'python/pylintrc',
     '~/.condarc' : 'python/condarc',
     '~/.config/pycodestyle' : 'python/pycodestyle',
-    '~/.ptpython/config.py' : 'python/ptpython.config.py',
-
-    # intellij
-    '~/.ideavimrc' : 'ideavimrc',
+    '~/.ptpython/config.py' : dict(action="remove"),
+    '~/.config/ptpython/config.py' : 'python/ptpython.config.py',
 }
 
 
-from distutils.spawn import find_executable
+import os
+import platform
+
+# Make sure the CWD is the root of dotfiles.
+__PATH__ = os.path.abspath(os.path.dirname(__file__))
+os.chdir(__PATH__)
 
 
-post_actions = [
+post_actions = []
+post_actions += [  # Check symbolic link at $HOME
     '''#!/bin/bash
     # Check whether ~/.vim and ~/.zsh are well-configured
     for f in ~/.vim ~/.zsh ~/.vimrc ~/.zshrc; do
@@ -108,34 +115,63 @@ Please remove your local folder/file $f and try again.\033[0m"
             echo "$f --> $(readlink $f)"
         fi
     done
-    ''',
+''']
 
+post_actions += [  # fzf
+    r'''#!/bin/bash
+    # Install junegunn/fzf
+    FZF_REPO="https://github.com/junegunn/fzf.git"
+    if [[ ! -d "$HOME/.fzf" ]]; then
+        git clone "$FZF_REPO" "$HOME/.fzf"
+    else
+        cd $HOME/.fzf && git fetch --tags
+    fi
+    cd $HOME/.fzf
+
+    # Checkout the latest release (tag)
+    tag=$(git ls-remote --tags --exit-code --refs "$FZF_REPO" \
+          | sed -E 's/^[[:xdigit:]]+[[:space:]]+refs\/tags\/(.+)/\1/g' \
+          | sort -V | tail -n1)
+    git checkout "$tag"
+
+    ./install --all --no-update-rc
+''']
+
+post_actions += [  # video2gif
     '''#!/bin/bash
-    # Update zgen modules and cache (the init file)
+    # Download command line scripts
+    mkdir -p "$HOME/.local/bin/"
+    _download() {
+        curl -L "$2" > "$1" && chmod +x "$1"
+    }
+    ret=0
+    set -v
+    _download "$HOME/.local/bin/video2gif" "https://raw.githubusercontent.com/wookayin/video2gif/master/video2gif" || ret=1
+    exit $ret;
+''']
+
+post_actions += [  # antidote (zsh plugins)
+    '''#!/bin/bash
+    # Update zsh bundles and cache (the init file)
     zsh -c "
-        source ${HOME}/.zshrc                   # source zplug and list plugins
-        if ! which zgen > /dev/null; then
+        # source zsh plugin manager and list plugins
+        DOTFILES_UPDATE=1 __p9k_instant_prompt_disabled=1 source ${HOME}/.zshrc
+        if ! which antidote > /dev/null; then
             echo -e '\033[0;31m\
-ERROR: zgen not found. Double check the submodule exists, and you have a valid ~/.zshrc!\033[0m'
-            ls -alh ~/.zsh/zgen/
+ERROR: antidote not found. Double check the submodule exists, and you have a valid ~/.zshrc!\033[0m'
+            ls -alh ~/.zsh/antidote/
             ls -alh ~/.zshrc
             exit 1;
         fi
-        zgen reset
-        zgen update
+        antidote update
+        antidote reset
+        source ~/.zshrc
     "
-    ''' if not args.skip_zgen else '',
+    ''' if not args.skip_zplug else \
+        '# zsh plugins update (Skipped)'
+]
 
-    '''#!/bin/bash
-    # validate neovim package installation on python2/3 and automatically install if missing
-    source "etc/install-neovim-py.sh"
-    ''',
-
-    # Run vim-plug installation
-    {'install' : '{vim} +PlugInstall +qall'.format(vim='nvim' if find_executable('nvim') else 'vim'),
-     'update'  : '{vim} +PlugUpdate  +qall'.format(vim='nvim' if find_executable('nvim') else 'vim'),
-     'none'    : ''}['update' if not args.skip_vimplug else 'none'],
-
+post_actions += [  # tmux plugins
     # Install tmux plugins via tpm
     '~/.tmux/plugins/tpm/bin/install_plugins',
 
@@ -144,7 +180,11 @@ ERROR: zgen not found. Double check the submodule exists, and you have a valid ~
     _version_check() {    # target_ver current_ver
         [ "$1" = "$(echo -e "$1\n$2" | sort -s -t- -k 2,2n | sort -t. -s -k 1,1n -k 2,2n | head -n1)" ]
     }
-    if ! _version_check "2.3" "$(tmux -V | cut -d' ' -f2)"; then
+    if [[ `uname` == "Linux" ]] && ! type tmux >/dev/null 2>&1; then
+        echo -e "\033[0;33mInstalling tmux because not installed globally.\033[0m"
+        bin/dotfiles install tmux
+        export PATH="$PATH:~/.local/bin"
+    elif ! _version_check "2.3" "$(tmux -V | cut -d' ' -f2)"; then
         echo -en "\033[0;33m"
         echo -e "$(tmux -V) is too old. Contact system administrator, or:"
         echo -e "  $ dotfiles install tmux  \033[0m (installs to ~/.local/, if you don't have sudo)"
@@ -152,49 +192,52 @@ ERROR: zgen not found. Double check the submodule exists, and you have a valid ~
     else
         echo "$(which tmux): $(tmux -V)"
     fi
-    ''',
+''']
 
-    r'''#!/bin/bash
-    # Setting up for coc.nvim (~/.config/coc, node.js)
-
-    # (i) create ~/.config/coc directory if not exists
-    GREEN="\033[0;32m"; YELLOW="\033[0;33m"; RESET="\033[0m";
-    coc_dir="$HOME/.config/coc/"
-    if [ ! -d "$coc_dir" ]; then
-        mkdir -p "$coc_dir" || exit 1;
-        echo "Created: $coc_dir"
-    else
-        echo -e "${GREEN}coc directory:${RESET}   $coc_dir"
-    fi
-
-    # (ii) node.js
-    node_version=$(node --version 2>/dev/null)
-    if [[ -n "$node_version" ]]; then
-    echo -e "${GREEN}node.js $node_version:${RESET} $(which node)"
-    else
-        echo -e "${YELLOW}Node.js not found. Please install node.js v10.0+ by either:
-
-  (a) Install node on the system (apt-get install nodejs, or brew install nodejs)
-  (b) Install node using nvm (https://github.com/nvm-sh/nvm#installation-and-update)
-  (c) Install locally (i.e. on ~/.local/),
-      $ dotfiles install node           # or,
-      $ curl -sL install-node.now.sh | bash -s -- --prefix=\$HOME/.local --verbose
-${RESET}"
-       exit 1;
-    fi
-    ''',
-
+post_actions += [  # default shell
     r'''#!/bin/bash
     # Change default shell to zsh
-    /bin/zsh --version >/dev/null || (echo -e "Error: /bin/zsh not found. Please install zsh"; exit 1)
+    /bin/zsh --version >/dev/null || (\
+        echo -e "\033[0;31mError: /bin/zsh not found. Please install zsh.\033[0m"; exit 1)
     if [[ ! "$SHELL" = *zsh ]]; then
         echo -e '\033[0;33mPlease type your password if you wish to change the default shell to ZSH\e[m'
         chsh -s /bin/zsh && echo -e 'Successfully changed the default shell, please re-login'
     else
         echo -e "\033[0;32m\$SHELL is already zsh.\033[0m $(zsh --version)"
     fi
-    ''',
+''']
 
+post_actions += [  # install some essential packages (linux)
+    '''#!/bin/bash
+    # Install node, rg, fd locally
+    export PATH="$PATH:$HOME/.local/bin"
+    type node >/dev/null 2>&1 || bin/dotfiles install node
+    type rg   >/dev/null 2>&1 || bin/dotfiles install ripgrep
+    type fd   >/dev/null 2>&1 || bin/dotfiles install fd
+    '''
+] if platform.system() == "Linux" else []
+
+post_actions += [  # neovim
+    '''#!/bin/bash
+    bash "etc/install-neovim.sh"
+''']
+
+post_actions += [  # vim-plug
+    # Run vim-plug installation
+    {'install' : 'PATH="$PATH:~/.local/bin"  nvim --headless +"Lazy! install" +qall',
+     'update'  : 'PATH="$PATH:~/.local/bin"  nvim --headless +"Lazy! update"  +qall',
+     'none'    : '# vim plugins: skipped',
+     }['update' if not args.skip_vimplug else 'none']
+    + '\n' +
+    r'''#!/bin/bash
+    if [[ -n "~/.vim/plugged/*.cloning(#qN)" ]]; then
+        echo "Cleaning up plugin installation artifacts..."
+        rm -fv ~/.vim/plugged/*.cloning
+    fi
+    '''
+]
+
+post_actions += [  # gitconfig.secret
     r'''#!/bin/bash
     # Create ~/.gitconfig.secret file and check user configuration
     if [ ! -f ~/.gitconfig.secret ]; then
@@ -224,8 +267,8 @@ EOL
     echo -en 'user.name  : '; git config --file ~/.gitconfig.secret user.name
     echo -en 'user.email : '; git config --file ~/.gitconfig.secret user.email
     echo -en '\033[0m';
-    ''',
-]
+''']
+
 
 ################# END OF FIXME #################
 
@@ -263,7 +306,7 @@ def log(msg, cr=True):
 def log_boxed(msg, color_fn=WHITE, use_bold=False, len_adjust=0):
     import unicodedata
     pad_msg = (" " + msg + "  ")
-    l = sum(not unicodedata.combining(ch) for ch in unicode(pad_msg, 'utf-8')) + len_adjust
+    l = sum(not unicodedata.combining(ch) for ch in unicode(pad_msg, 'utf-8')) + len_adjust  # noqa
     if use_bold:
         log(color_fn("┏" + ("━" * l) + "┓\n" +
                      "┃" + pad_msg   + "┃\n" +
@@ -273,6 +316,13 @@ def log_boxed(msg, color_fn=WHITE, use_bold=False, len_adjust=0):
                      "│" + pad_msg   + "│\n" +
                      "└" + ("─" * l) + "┘\n"), cr=False)
 
+def makedirs(target, mode=511, exist_ok=False):
+    try:
+        os.makedirs(target, mode=mode)
+    except OSError as ex:  # py2 has no exist_ok=True
+        import errno
+        if ex.errno == errno.EEXIST and exist_ok: pass
+        else: raise
 
 # get current directory (absolute path)
 current_dir = os.path.abspath(os.path.dirname(__file__))
@@ -281,7 +331,8 @@ os.chdir(current_dir)
 # check if git submodules are loaded properly
 stat = subprocess.check_output("git submodule status --recursive",
                                shell=True, universal_newlines=True)
-submodule_issues = [(l.split()[1], l[0]) for l in stat.split('\n') if len(l) and l[0] != ' ']
+submodule_issues = [(l.split()[1], l[0]) for l in stat.split('\n')  # noqa
+                    if len(l) and l[0] != ' ']
 
 if submodule_issues:
     stat_messages = {'+': 'needs update', '-': 'not initialized', 'U': 'conflict!'}
@@ -289,20 +340,20 @@ if submodule_issues:
         log(RED("git submodule {name} : {status}".format(
             name=submodule_name,
             status=stat_messages.get(submodule_stat, '(Unknown)'))))
-    log(RED(" you may run: $ git submodule update --init --recursive"))
+    log(YELLOW("Git submodules are not initialized.\n"))
 
-    log("")
-    log(YELLOW("Do you want to update submodules? (y/n) "), cr=False)
-    shall_we = (input().lower() == 'y')
-    if shall_we:
+    update_submodule = True
+    if update_submodule:
         git_submodule_update_cmd = 'git submodule update --init --recursive'
         # git 2.8+ supports parallel submodule fetching
         try:
-            git_version = str(subprocess.check_output("""git --version | awk '{print $3}'""", shell=True))
-            if git_version >= '2.8': git_submodule_update_cmd += ' --jobs 8'
-        except Exception as ex:
+            git_version = str(subprocess.check_output(
+                """git --version | awk '{print $3}'""", shell=True))
+            if git_version >= '2.8':
+                git_submodule_update_cmd += ' --jobs 8'
+        except Exception:
             pass
-        log("Running: %s" % BLUE(git_submodule_update_cmd))
+        log("Running: %s" % CYAN(git_submodule_update_cmd))
         subprocess.call(git_submodule_update_cmd, shell=True)
     else:
         log(RED("Aborted."))
@@ -310,45 +361,72 @@ if submodule_issues:
 
 
 log_boxed("Creating symbolic links", color_fn=CYAN)
-for target, source in sorted(tasks.items()):
+for target, item in sorted(tasks.items()):
     # normalize paths
-    source = os.path.join(current_dir, os.path.expanduser(source))
+    if isinstance(item, str):
+        item = {'src': item}
+
+    source = item.get('src', None)
+    force = item.get('force', False)
+    fail_on_error = item.get('fail_on_error', False)
+
+    if not item.get('cond', True):
+        continue
+
+    if source:
+        source = os.path.join(current_dir, os.path.expanduser(source))
     target = os.path.expanduser(target)
 
+    if item.get('action', None) == 'remove':
+        try:
+            os.unlink(target)
+        except OSError:  # FileNotFoundError
+            pass
+        continue
+
+    assert source is not None
     # bad entry if source does not exists...
-    if not os.path.lexists(source):
+    if force:
+        pass  # Even if the source does not exist, always make a symlink
+    elif not os.path.lexists(source):
         log(RED("source %s : does not exist" % source))
         continue
 
     # if --force option is given, delete and override the previous symlink
     if os.path.lexists(target):
         is_broken_link = os.path.islink(target) and not os.path.exists(os.readlink(target))
+        err = ""
 
-        if args.force or is_broken_link:
+        if is_broken_link:  # safe to remove
             if os.path.islink(target):
                 os.unlink(target)
+
+        elif os.path.islink(target):
+            if args.force:
+                os.unlink(target)
             else:
-                log("{:50s} : {}".format(
-                    BLUE(target),
-                    YELLOW("already exists but not a symbolic link; --force option ignored")
-                ))
+                msg = GRAY("already exists, skipped")
+                log("{:60s} : {}".format(BLUE(target), msg))
+        elif fail_on_error:
+            err = RED("already exists, please remove " + target + " manually.")
         else:
-            log("{:50s} : {}".format(
-                BLUE(target),
-                GRAY("already exists, skipped") if os.path.islink(target) \
-                    else YELLOW("exists, but not a symbolic link. Check by yourself!!")
-            ))
+            if args.force:
+                err = YELLOW("already exists but not a symbolic link; --force option ignored")
+            else:
+                err = YELLOW("exists, but not a symbolic link. Check by yourself!!")
+        if err:
+            log("{:60s} : {}".format(BLUE(target), err))
+            if fail_on_error:
+                sys.exit(1)
 
     # make a symbolic link if available
     if not os.path.lexists(target):
-        try:
-            mkdir_target = os.path.split(target)[0]
-            os.makedirs(mkdir_target)
+        mkdir_target = os.path.split(target)[0]
+        if not os.path.isdir(mkdir_target):
+            makedirs(mkdir_target)
             log(GREEN('Created directory : %s' % mkdir_target))
-        except:
-            pass
         os.symlink(source, target)
-        log("{:50s} : {}".format(
+        log("{:60s} : {}".format(
             BLUE(target),
             GREEN("symlink created from '%s'" % source)
         ))
@@ -364,7 +442,7 @@ for action in post_actions:
 
     log("\n", cr=False)
     log_boxed("Executing: " + action_title, color_fn=CYAN)
-    ret = subprocess.call(['bash', '-c', action],
+    ret = subprocess.call(['bash', '-e', '-c', action],
                           preexec_fn=lambda: signal(SIGPIPE, SIG_DFL))
 
     if ret:

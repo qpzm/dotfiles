@@ -7,11 +7,11 @@ export LANG=en_US.UTF-8
 
 # fzf-powered CTRL-R: launch fzf with sort enabled
 # @see https://github.com/junegunn/fzf/issues/526
-export FZF_CTRL_R_OPTS='--sort'
+export FZF_CTRL_R_OPTS="--sort --prompt 'History> '"
 
 # Ctrl-T: Setting ripgrep or fd as the default source for Ctrl-T fzf
 if (( $+commands[rg] )); then
-    export FZF_CTRL_T_COMMAND='rg --files --hidden --follow --glob "!.git/"'
+    export FZF_CTRL_T_COMMAND='rg --files --hidden --follow --no-messages --glob "!.git/"'
 elif (( $+commands[fd] )); then
     export FZF_CTRL_T_COMMAND='fd --type f'
 fi
@@ -22,13 +22,25 @@ fi
 
 # ALT-C: FASD_CD with preview
 export FZF_ALT_C_COMMAND='fasd_cd -d -l -R'
-export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200' --prompt 'cd> '"
+
+# Color and appearances for fzf
+# background color: use brighter and more visible color.
+# marker: use yellow-ish color to make it more appearant
+export FZF_DEFAULT_OPTS="--color 'bg+:239,marker:226'"
 
 # Color and appearances
 # use brighter and more visible background color.
 export FZF_DEFAULT_OPTS="--color 'bg+:239'"
 
 # }}}
+
+# fzf-git
+if (( $+commands[delta] )); then
+  export FZF_GIT_PAGER='delta --commit-decoration-style="none"'
+else
+  export FZF_GIT_PAGER='less'
+fi
 
 # Save more history entries
 # @see history/init.zsh
@@ -53,19 +65,15 @@ unsetopt AUTO_NAME_DIRS       # Do not auto add variable-stored paths
 # This is especially useful for some commands with '^', '~', '#', e.g. 'git show HEAD^1'
 unsetopt NOMATCH
 
-#
-# Path Configurations.
-#
-# Note: Configuring $PATH should be done preferably in ~/.zshenv,
-# in order that zsh plugins are also provisioned with exectuables from $PATH.
-# Entries listed here may not be visible from zsh plugins and source scripts.
-
-# GO {{{
-# `brew install go` handles this.
-
-# Bazel {{{
-if [ -f $HOME/.bazel/bin/bazel ]; then
-  export BAZEL_HOME="$HOME/.bazel"
-  path=( $path $BAZEL_HOME/bin )
+# Editor
+if (( $+commands[nvim] )) && [[ -z "$GIT_EDITOR" ]] ; then
+  export GIT_EDITOR="nvim"
 fi
-# }}}
+
+#
+# Path Configurations: Removed, DON'T PUT HERE.
+#
+# Note: Configuring $PATH should be done preferably in:
+#   ~/.zshenv    (available even for non-login shells and scripts as well as interactive shells)
+#   ~/.zshrc     (available only for interactive (login or non-login) shells)
+#

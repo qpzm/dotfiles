@@ -1,86 +1,126 @@
-Dotfiles
-========
 
-🏠 Personal dotfiles for \*NIX (Mac OS X and Linux) systems.
+# Dotfiles
 
-Installation
-------------
+🏠 Personal dotfiles for \*NIX (macOS and Linux) systems.
 
-### Clone and Install!
 
-One-liner (if, you trust):
+## Installation
+
+### 👉 One-liner (if you trust me):
 
 ```bash
 curl -fsSL https://dotfiles.wook.kr/etc/install | bash
 ```
 
-An alternative:
+<details><summary>
+💡 (Tip) You only need to remember <code>curl dotfiles.wook.kr</code> (Click to expand)
+</summary></p>
+
+* Every file is accessible through `dotfiles.wook.kr` (via `curl -L` or `wget`), e.g.,
+  * https://dotfiles.wook.kr/vimrc
+  * https://dotfiles.wook.kr/vimrc?raw=true
+  * https://dotfiles.wook.kr/bin/tb
+
+<p></details>
+
+<details><summary>
+🤔 Want to manually clone and install? (Click to expand)
+</summary><p>
 
 ```bash
-git clone --recursive https://github.com/wookayin/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles && python install.py
+$ git clone --recursive https://github.com/wookayin/dotfiles.git ~/.dotfiles
+$ cd ~/.dotfiles && python install.py
 ```
+
 <!--
 Note: The option `-j8` (`--jobs 8`) works with Git >= 2.8 (parallel submodule fetching).
 For older versions of Git, try without `-j` option.
 -->
 
-The installation script will create symbolic links for the specified dotfiles.
-If some target file already exists (e.g. `~/.vim`), you will need to manually resolve the conflict (delete the old one or just ignore).
+</p></details>
 
-### `dotfiles`
+<br>
 
-Update (pull the changes from upstream and run [`install.py`][install.py] again)
 
-```
+The installation script will clone the repository into `~/.dotfiles` and create symbolic links (e.g., `~/.vimrc`) for you.
+If target files already exist (e.g. `~/.vim`, `~/.vimrc`), you will need to manually resolve the conflict (delete the old one or just ignore). See Troubleshooting below for details.
+
+
+## `$ dotfiles`
+
+**To update dotfiles** (pull changes from upstream and run [`install.py`][install.py] again):
+
+```bash
 $ dotfiles update
+$ dotfiles update --fast          # fast update mode: skip updating {vim,zsh} plugins
+```
+
+On Linux, you can [install some common softwares locally][linux-locals.sh] (into `$HOME/.local/bin`) *without sudo*:
+
+```bash
+$ dotfiles install neovim         # -> ~/.local/bin/nvim
+$ dotfiles install ripgrep        # -> ~/.local/bin/rg
 ```
 
 
-### [`install.py`][install.py]
 
-This is a clunky installation script written in python;
-the task definition lies on the top of the script file.
+## 🆘 Troubleshooting
 
+*Please read carefully warning messages during installation !!*
 
-Some Handy URLs
----------------
+* If something goes wrong, please run **[`$ dotfiles update`][dotfiles-update]** (or [install.py]) to make everything up-to-date.
+    * Please carefully READ the error/warning message printed by the installation script.
+    * If you have your own `~/.zshrc`, `~/.vimrc`, `~/.vim`, etc., that are NOT symbolic links,
+      they will not be overwritten by default.
+      In such cases you should delete these files *manually*.
 
-Every file is accessible through `dotfiles.wook.kr` (via `curl -L` or `wget`), e.g.
+* Q: I see some weird icons like `⍰` in (neo)vim or in the [statusline](https://github.com/powerline/powerline#vim-statusline).
+  - A: Use [Nerd fonts](https://github.com/ryanoasis/nerd-fonts) v3. If you haven't upgrade to Nerd fonts [**v3.1.1** or higher](https://github.com/ryanoasis/nerd-fonts/releases/tag/v3.1.1), upgrade to v3 due to the new (breaking) Material Design Icons codepoints.
+    - Note: `JetBrainsMono Nerd Font Mono` ~~`JetBrainsMono NFM`~~ (nerd-fonts [v3.1.0 is buggy](https://github.com/ryanoasis/nerd-fonts/issues/1434))
+  - Mac users can install via: `brew install --cask font-*-nerd-font`.
+    - (Minimal fonts only `brew install --cask font-jetbrains-mono-nerd-font`)
+  - To upgrade existing installations, try `brew reinstall --cask $(brew list | grep nerd-font)`.
 
-* https://dotfiles.wook.kr/vimrc
-* https://dotfiles.wook.kr/vimrc?raw=true
-* https://dotfiles.wook.kr/bin/tb
+* If neovim + treesitter emits an error like `query: invalid node type`, run `:TSUpdate` (and wait for installation is done).
+  * See [nvim-treesitter#3092](https://github.com/nvim-treesitter/nvim-treesitter/issues/3092) for more details.
 
+* If neovim cannot run due to `version 'GLIBC_2.29' not found` errors (on Ubuntu 18.04 or earlier),
+  you should upgrade your Ubuntu distribution to 20.04+ in order to run nvim 0.8.x or higher.
+  If you use [appimage](https://github.com/neovim/neovim/releases/tag/stable) binary of neovim,
+  this will work in Ubuntu 18.04; install neovim through `dotfiles install neovim` or `NEOVIM_VERSION=0.9.4 dotfiles install neovim`.
 
-Experimental Features
---------------------
+* If [**neovim**][neovim] emits any startup errors (e.g. `no module named neovim`):
+    * Use **latest neovim** (e.g., neovim 0.9.5).
+      To install/upgrade neovim on your system, you can run `dotfiles install neovim` (linux) or `brew install neovim` (mac).
+    * Try `:checkhealth`.
+    * Try `:Lazy update`: some errors from vim plugin could be easily solved by updating plugins to date.
+      You can do `:Lazy update` (in vim) or `$ dotfiles update` (in zsh).
+    * We require python3 version not less than 3.6. See https://endoflife.date/python
+    * Make sure that the [`pynvim`](https://pypi.python.org/pypi/pynvim/) pypi package is installed on *local* python 3,
+      i.e. the python3 on conda, virtualenv, etc.
+      This should have been automatically installed.
+      If it doesn't work, check `which python3`. Use the following vim command to tell which host python is used:
+          [`:echo g:python3_host_prog`](https://github.com/wookayin/dotfiles/blob/master/nvim/init.vim).
+      * If you are not sure, manually running `python3 -m pip install --user pynvim` might help.
 
-* Neovim: Better completion with Language Server ([coc.nvim]) ([#14])
-
-[#14]: https://github.com/wookayin/dotfiles/issues/14
-[coc.nvim]: https://github.com/neoclide/coc.nvim
-
-
-Troubleshooting
----------------
-
-* If something goes wrong, try `dotfiles update` to update everything and re-run [the installation script][install.py] again.
-    * If you have your own `~/.zshrc`, `~/.vimrc`, `~/.vim`, etc., then they will not be overwritten by default.
-      In such cases you may want to delete those files *manually*.
-
-* If you are using **neovim** and seeing any startup errors (e.g. `no module named neovim`):
-    * Must use `neovim >= 0.3`. If neovim on your system is too old, try `dotfiles install neovim`.
-    * We require python3 version not less than 3.4; check your python version is >= 3.5 (semshi requires 3.5+).
-    * Make sure that the [`pynvim`](https://pypi.python.org/pypi/pynvim/) pypi package is installed on [**local** python 3 (see `g:python3_host_prog`)](https://github.com/wookayin/dotfiles/blob/master/nvim/init.vim).
-    * e.g. `/usr/local/bin/pip3 install pynvim` where the path to `pip` (or `pip3`) depends on your system.
-    * If you are not sure, `python3 -m pip install --user pynvim` will work in any case.
-
-* [Powerline characters](https://github.com/powerline/powerline#screenshots) are not displayed properly? Install [Powerline fonts](https://github.com/powerline/fonts).
-* Does vim color look weird (e.g. black-and-white)? Check your terminal emulator supports [24-bit color](https://github.com/wookayin/dotfiles/pull/9).
+* Does vim color look weird (e.g. only black-and-white)?
+  * Check whether your terminal emulator supports [24-bit color](https://github.com/wookayin/dotfiles/pull/9). Use iTerm2, wezterm, or kitty; NOT built-in Terminal.
+  * Latest Mosh (1.4.0+) support 24-bit colors, so try upgrading mosh if you are using it.
+  * Try `:set notermguicolors` to temporarily disable 24-bit colors.
 * Does tmux look weird? Make sure that tmux version is [2.3](etc/ubuntu-setup.sh) or higher.
-    * If you don't have sudo, you can install it locally by `$ dotfiles install tmux`.
-* Ruby version is shown unwantedly? A simple workaround might be to install [rvm](https://rvm.io/).
+    * Run `$ dotfiles install tmux` to install `tmux` into `$HOME/.local/bin`, if you do not have sudo.
+* If you are still lost, or you've found a bug, please feel free to contact me or raise an issue ---
+  I will happy to assist.
 
 
+[neovim]: https://github.com/neovim/neovim
+[dotfiles-update]: https://github.com/wookayin/dotfiles/blob/master/bin/dotfiles
+[linux-locals.sh]: https://github.com/wookayin/dotfiles/blob/master/etc/linux-locals.sh
 [install.py]: https://github.com/wookayin/dotfiles/blob/master/install.py
+
+
+## License
+
+[The MIT License (MIT)](LICENSE)
+
+Copyright (c) 2012-2025 Jongwook Choi (@wookayin)

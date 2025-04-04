@@ -16,9 +16,16 @@ if [[ `uname` == 'Darwin' ]]; then
 fi
 
 # history settings
-shopt -s histappend		# append, no overwrite
+shopt -s histappend  # append, no overwrite
 HISTSIZE=10000
 HISTFILESIZE=20000
+
+# ulimits
+ulimit -n 10240
+
+# Clear environment variables in nested session
+unset VIM
+unset VIMRUNTIME
 
 ##############
 # 2. Aliases #
@@ -39,11 +46,16 @@ alias egrep='egrep --color=auto'
 
 # alert for rm, cp, mv
 alias rm='rm -iv'
-alias cp='cp -iv'
+alias cp='cp -ivp'
 alias mv='mv -iv'
 
 # screens
 alias scr='screen -rD'
+
+# inspect $PATH
+path() {
+  printf "%s\n" $(echo $PATH | tr ":" "\n")
+}
 
 ##################
 # 3. Color & PS1 #
@@ -87,23 +99,17 @@ git_branch() {
 PS1="\[$BOLD_GREEN\][\[$BOLD_YELLOW\]\u\[$BOLD_GREEN\]@\[$BOLD_BLUE\]\h:\[$BOLD_RED\]"'`pwd`'"\[$BOLD_GREEN\]] "'`git_branch`'" \[$GRAY\]\t\n\[$BOLD_GREEN\]"'\$'"\[$COLOR_NONE\] "
 
 # Terminal
-# screen-256color if inside tmux, xterm-256color otherwise
-if [[ -n "$TMUX" ]]; then
-  export TERM="screen-256color"
-else
-  export TERM="xterm-256color"
-fi
+export TERM="xterm-256color"
 
 # PATH for local settings
-export PATH="~/.local/bin/:$PATH"
+if [[ ! "$PATH" == *~/.local/bin* ]]; then
+  export PATH="~/.local/bin:$PATH"
+fi
 
 # Additional Completion
 if [ -f /usr/local/etc/bash_completion ]; then source /usr/local/etc/bash_completion; fi
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-[ -s "/Users/hyunminlee/.jabba/jabba.sh" ] && source "/Users/hyunminlee/.jabba/jabba.sh"
-. "$HOME/.cargo/env"
-. "/Users/hyunminlee/.starkli/env"
+# Local bashrc
+if [ -f "$HOME/.bashrc.local" ]; then
+  source "$HOME/.bashrc.local"
+fi

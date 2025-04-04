@@ -4,6 +4,7 @@
 .*.s[a-w][a-z]
 Session.vim
 .netrwhist
+.XTabline*
 
 # Mac OS X
 .DS_Store
@@ -19,21 +20,33 @@ Session.vim
 Thumbs.db
 
 # IDE stuffs
+.vscode/
 .idea/
 *.iml
 .project
 .classpath
 .settings/
 .ipynb_checkpoints/
+tags
+.vimspector.json
+.cache/
+
+# Build artifacts
+*.dSYM
+*.so
+*.dylib
 
 # Python, Virtualenv
 .venv*
 .mypy_cache
 __pycache__
 *.py[cod]
+.condaenv
+.virtual_documents/
 
-# Etc
+# Node
+node_modules/
 npm-debug.log
 
-# C++
-a.out
+# Log files
+events.out.tfevents.*
