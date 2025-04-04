@@ -147,3 +147,6 @@ export NVM_DIR="$HOME/.nvm"
 # tabtab source for packages
 # uninstall by removing these lines
 [[ -f ~/.config/tabtab/__tabtab.zsh ]] && . ~/.config/tabtab/__tabtab.zsh || true
+
+# solana-install
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"

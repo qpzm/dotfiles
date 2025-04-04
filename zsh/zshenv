@@ -149,7 +149,7 @@ export PATH="$PATH:/Users/hyunminlee/.local/bin"
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/HOME
 
 # rust
-source $HOME/.cargo/env
+. "$HOME/.cargo/env"
 
 export PATH="$PATH:$HOME/.foundry/bin"
 
@@ -204,6 +204,7 @@ export BB_HOME="/Users/hyunminlee/.bb"
 
 export PATH="$PATH:$BB_HOME"
 
+export PATH=/opt/homebrew/bin:$PATH
 export OPENSSL_DIR=$(brew --prefix openssl)
 export OPENSSL_INCLUDE_DIR=$(brew --prefix openssl)/include
 export OPENSSL_LIB_DIR=$(brew --prefix openssl)/lib
@@ -213,3 +214,7 @@ export PATH="/Users/hyunminlee/Library/Application Support/JetBrains/Toolbox/scr
 
 # [[ -s "/Users/hyunminlee/.gvm/scripts/gvm" ]] && source "/Users/hyunminlee/.gvm/scripts/gvm"
 export PATH="${HOME}/.bb:${PATH}"
+
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
