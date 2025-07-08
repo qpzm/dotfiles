@@ -213,12 +213,23 @@ end
 --- Install auto_lsp_servers on demand (FileType)
 function M._ensure_mason_installed()
   local augroup = vim.api.nvim_create_augroup('mason_autoinstall', { clear = true })
-  local lspconfig_to_package = require("mason-lspconfig.mappings.server").lspconfig_to_package
-  local filetype_mappings = require("mason-lspconfig.mappings.filetype")
+
+  -- Hotfix against mason_lspconfig v2.0 breaking changes
+  local lspconfig_to_package = vim.F.npcall(function()
+    return require("mason-lspconfig.mappings.server").lspconfig_to_package
+  end)
+  local filetype_mappings = vim.F.npcall(function()
+    return require("mason-lspconfig.mappings.filetype")
+  end)
+  if lspconfig_to_package == nil then
+    vim.notify("mason-lspconfig is broken in v2.0; please downgrade to v1.32.0 by manual checkout",
+      vim.log.levels.ERROR, { title = "config/lsp" })
+  end
+
   local _requested = {}
 
   local ft_handler = {}
-  for ft, lsp_names in pairs(filetype_mappings) do
+  for ft, lsp_names in pairs(filetype_mappings or {}) do
     lsp_names = vim.tbl_filter(function(lsp_name)
       ---@diagnostic disable-next-line: param-type-mismatch
       return auto_lsp_servers[lsp_name] == true or vim.tbl_contains(auto_lsp_servers[lsp_name] or {}, ft)
@@ -226,7 +237,7 @@ function M._ensure_mason_installed()
 
     ft_handler[ft] = vim.schedule_wrap(function()
       for _, lsp_name in pairs(lsp_names) do
-        local pkg_name = lspconfig_to_package[lsp_name]
+        local pkg_name = (lspconfig_to_package or {})[lsp_name]
         local ok, pkg = pcall(require("mason-registry").get_package, pkg_name)
         if ok and not pkg:is_installed() and not _requested[pkg_name] then
           _requested[pkg_name] = true
@@ -512,7 +523,9 @@ end)
 
 --- setup all known and available LSP servers that are installed
 function M._setup_lspconfig()
-  local all_known_lsps = require('mason-lspconfig.mappings.server').lspconfig_to_package
+  local all_known_lsps = vim.F.npcall(function()
+    return require('mason-lspconfig.mappings.server').lspconfig_to_package
+  end) or {}
   local lsp_uninstalled = {}   --- { lspconfig name => mason package name }
   local mason_need_refresh = false
 
@@ -868,75 +881,6 @@ function M.setup_trouble()
   }
 end
 
-----------------------------------------
---- Linting, and Code actions
-----------------------------------------
-function M.setup_null_ls()
-  local null_ls = require("null-ls")
-  local h = require("null-ls.helpers")
-
-  -- Monkey-patching because of a performance bug on startup (jose-elias-alvarez/null-ls.nvim#1564)
-  require('null-ls.client').retry_add = require('null-ls.client').try_add
-
-  -- @see https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/CONFIG.md
-  -- @see https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md
-
-  local executable = function(cmd)
-    return vim.fn.executable(cmd) > 0
-  end
-  local cond_if_executable = function(cmd)
-    return function() return executable(cmd) end
-  end
-  local _exclude_nil = function(tbl)
-    return vim.tbl_filter(function(s) return s ~= nil end, tbl)
-  end
-
-  -- null-ls sources (mason.nvim installation is recommended)
-  -- @see $VIMPLUG/null-ls.nvim/doc/BUILTINS.md
-  -- @see $VIMPLUG/null-ls.nvim/lua/null-ls/builtins/
-  local sources = {}
-  do -- [[ diagnostics (linting) ]]
-    -- python: pylint, flake8
-    vim.list_extend(sources, {
-      require('null-ls.builtins.diagnostics.pylint').with {
-          method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
-          condition = function(utils)  ---@param utils ConditionalUtils
-            -- https://pylint.pycqa.org/en/latest/user_guide/run.html#command-line-options
-            return executable('pylint') and
-              utils.root_has_file({ "pylintrc", ".pylintrc" })
-          end,
-      },
-    })
-  end
-
-  -- See $VIMPLUG/null-ls.nvim/lua/null-ls/config.lua, defaults
-  null_ls.setup({
-    sources = _exclude_nil(sources),
-
-    on_attach = on_attach,
-    should_attach = function(bufnr)
-      -- Excludes some files on which it doesn't not make a sense to use linting.
-      local bufname = vim.api.nvim_buf_get_name(bufnr)
-      if bufname:match("^git://") then return false end
-      if bufname:match("^fugitive://") then return false end
-      if bufname:match("/lib/python%d%.%d+/") then return false end
-      return true
-    end,
-
-    -- Use a border for the :NullLsLog window
-    border = 'single',
-
-    -- Debug mode: Use :NullLsLog for viewing log files (~/.cache/nvim/null-ls.log)
-    debug = false,
-  })
-
-  -- Commands for LSP formatting. :LspFormat
-  -- FormattingOptions: @see https://microsoft.github.io/language-server-protocol/specifications/specification-3-17/#formattingOptions
-  vim.cmd [[
-    command! LspFormatSync        lua vim.lsp.buf.format({timeout_ms = 5000})
-  ]]
-end
-
 
 -- Entrypoint
 function M.setup_lsp()
@@ -956,7 +900,6 @@ function M.setup_all()
   M.setup_navic()
   M.setup_fidget()
   M.setup_trouble()
-  M.setup_null_ls()
 end
 
 

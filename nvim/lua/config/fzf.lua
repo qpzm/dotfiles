@@ -131,13 +131,13 @@ function M.setup_fzf()
   end
 
   global_opts.lsp = {
+    async_or_timeout = 500,  -- 500ms. for gd, gr, code actions, etc.
     code_actions = {
       previewer = "codeaction_native",
       preview_pager = (
         "delta --side-by-side --width=$FZF_PREVIEW_COLUMNS " ..
         "--hunk-header-style='omit' --file-style='omit' "
       ),
-      async_or_timeout = 1000,
       winopts = {
         preview = {
           layout = "vertical",
@@ -253,6 +253,7 @@ function M.setup_fzf()
     if e.args == "?" then  -- GFiles?
       return vim.cmd [[ GitStatus ]]
     end
+    vim.api.nvim_echo({ {':GitFiles! ('}, {vim.fn.getcwd(), 'Directory'}, {')'} }, false, {})
     ---@diagnostic disable-next-line: param-type-mismatch
     if #e.args > 0 and vim.loop.fs_stat(vim.fn.expand(e.args) or "") == nil then
       return vim.notify("Not found: " .. e.args, vim.log.levels.WARN, { title = "config.fzf" })
