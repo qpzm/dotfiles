@@ -1,4 +1,5 @@
 -- LSP, completions, and language-specific plugins
+---@diagnostic disable: missing-fields
 
 local Plug = require('utils.plug_utils').Plug
 local PlugConfig = require('utils.plug_utils').PlugConfig
@@ -26,6 +27,7 @@ return {
 
   -- LSP (lazy loaded, see config/lsp.lua)
   Plug 'neovim/nvim-lspconfig' {
+    version = 'v2.5.0',
     event = LspSetup,
     dependencies = { 'mason.nvim' },
     config = require('config.lsp').setup_lsp, -- mason, lspconfig, etc.
@@ -67,7 +69,7 @@ return {
 
   -- Formatting
   Plug 'stevearc/conform.nvim' {
-    version = '>=5.0',
+    version = 'v9.*',
     config = require('config.formatting').setup,
   };
 
