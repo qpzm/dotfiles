@@ -1,5 +1,3 @@
-export PATH="$PATH:/Users/hyunminlee/.local/bin"
-
 # java
 [ -s "$HOME/.jabba/jabba.sh" ] && source "$HOME/.jabba/jabba.sh"
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-14.jdk/Contents/HOME
@@ -24,18 +22,18 @@ function reinit() {
 }
 
 # starkli
-. "/Users/hyunminlee/.starkli/env"
+# . "/Users/hyunminlee/.starkli/env"
 
-# Use Starknet testnet
-export STARKNET_NETWORK=alpha-goerli
-# Set the default wallet implementation to be used by the CLI export
-STARKNET_WALLET=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount
-# Set the path to the Cairo 1 compiler binary. Adapt this path to fit your installation if needed
-export CAIRO_COMPILER_DIR=~/.cairo/target/release/
+# # Use Starknet testnet
+# export STARKNET_NETWORK=alpha-goerli
+# # Set the default wallet implementation to be used by the CLI export
+# STARKNET_WALLET=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount
+# # Set the path to the Cairo 1 compiler binary. Adapt this path to fit your installation if needed
+# export CAIRO_COMPILER_DIR=~/.cairo/target/release/
 
-export STARKNET_ACCOUNT=~/.starkli-wallets/deployer/account.json
-export STARKNET_KEYSTORE=~/.starkli-wallets/deployer/keystore.json
-export PATH="$HOME/.cairo/target/release:$PATH"
+# export STARKNET_ACCOUNT=~/.starkli-wallets/deployer/account.json
+# export STARKNET_KEYSTORE=~/.starkli-wallets/deployer/keystore.json
+# export PATH="$HOME/.cairo/target/release:$PATH"
 
 # bun completions
 [ -s "/Users/hyunminlee/.bun/_bun" ] && source "/Users/hyunminlee/.bun/_bun"

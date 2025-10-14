@@ -270,5 +270,3 @@ fi
 if [ -n "$ZSH_PROFILE_LOG" ]; then
   zprof >! "$ZSH_PROFILE_LOG"
 fi
-
-# vim: set ts=2 sts=2 sw=2:

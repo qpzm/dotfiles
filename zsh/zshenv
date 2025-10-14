@@ -131,6 +131,10 @@ prepend_path "$GOPATH/bin"
 
 # rust (cargo)
 prepend_path "$HOME/.cargo/bin"
+prepend_path "$HOME/.cargo/env"
+
+# solana
+prepend_path "$HOME/.local/share/solana/install/active_release/bin"
 
 # Bazel
 if [ -f "$HOME/.bazel/bin/bazel" ]; then
@@ -271,6 +275,26 @@ export PYTHONSTARTUP=$HOME/.pythonrc.py
 
 # Disable dot files in archive
 export COPYFILE_DISABLE=true
+
+#
+# Node Version Manager (NVM)
+#
+if [[ -z "${XDG_CONFIG_HOME}" ]]; then
+  export NVM_DIR="${HOME}/.nvm"
+else
+  export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+fi
+
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  source "$NVM_DIR/nvm.sh"
+fi
+
+#
+# Python Version Manager (pyenv)
+#
+if (( $+commands[pyenv] )); then
+  eval "$(pyenv init -)"
+fi
 
 if [ -f "$HOME/.zshenv.local" ]; then
   source "$HOME/.zshenv.local"
